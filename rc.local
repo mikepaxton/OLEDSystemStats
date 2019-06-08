@@ -1,4 +1,4 @@
 
-# Place this line in /etc/rc.local file and create directories in /home/pi
+# Paste this line in /etc/rc.local file and create needed directories in /home/pi
 
 sudo python /home/pi/projects/OLEDSystemStats/stats.py &

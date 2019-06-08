@@ -11,8 +11,26 @@ CPU Temp
 This is a modified version of stats.py supplied by Adafruit in there SSd1306 OLED display driver for Raspberry Pi.
 It's currently setup to use I2C as the interface there for I2C must be enabled under raspi-config interfaces option.
 
-Also discovered the PIL library used to display the text on the OLED display is pretty much obsolete and instead
-I installed the Pillow library which is a drop in replacement.
+Follow the instructions from Adafruit to install the python OLED driver.
+
+https://github.com/adafruit/Adafruit_Python_SSD1306
+
+I also discovered the PIL library used to display the text on the OLED display is pretty much obsolete so instead
+I installed the Pillow library which is a drop in replacement. Pillow has a few dependencies which need to be installed
+first.
+
+sudo apt-get update
+sudo apt-get install libjpeg-dev -y
+sudo apt-get install zlib1g-dev -y
+sudo apt-get install libfreetype6-dev -y
+sudo apt-get install liblcms1-dev -y
+sudo apt-get install libopenjp2-7 -y
+sudo apt-get install libtiff5 -y
+
+Once those dependencies are installed you can install Pillow using pip.
+
+sudo pip install pi pillow
+
 
 I'm using DejaVuSansMono-Bold.ttf font which produces a slightly better looking font on the OLED display over that of
 the default font.  This font can be installed by installing fontconfig by way of sudo apt install fontconfig.
