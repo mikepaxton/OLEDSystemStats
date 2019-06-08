@@ -1,0 +1,17 @@
+An OLED display used for showing specific stats of the Raspberry Pi.
+
+These stats are currently:
+Host Name
+IP address
+CPU Usage
+Memory Usage
+Disk Usage
+CPU Temp
+
+This is a modified version of stats.py supplied by Adafruit in there SSd1306 OLED display driver for Raspberry Pi.
+It's currently setup to use I2C as the interface there for I2C must be enabled under raspi-config interfaces option.
+
+Also discovered the PIL library used to desplay the text on the OLED display is pretty much obsolete and instead
+I installed the Pillow library which is a drop in replacement.
+
+I use /etc/rc.local on the Raspberry Pi to execute stats.py on system boot.
