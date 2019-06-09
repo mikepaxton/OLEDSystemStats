@@ -24,6 +24,8 @@
 # Added both CPU temp and IP address to OLED display
 # Switched font to DejaVuSansMono-Bold.ttf for a slightly larger text
 # Note: Need to install Pillow rather than PIL.
+# Decreased the refresh time to try to take some of the overhead load off of cpu
+
 
 import time
 
