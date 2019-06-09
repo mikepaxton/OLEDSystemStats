@@ -19,13 +19,9 @@ I also discovered the PIL library used to display the text on the OLED display i
 I installed the Pillow library which is a drop in replacement. Pillow has a few dependencies which need to be installed
 first.
 
-sudo apt-get update
-sudo apt-get install libjpeg-dev -y
-sudo apt-get install zlib1g-dev -y
-sudo apt-get install libfreetype6-dev -y
-sudo apt-get install liblcms1-dev -y
-sudo apt-get install libopenjp2-7 -y
-sudo apt-get install libtiff5 -y
+sudo apt update
+sudo apt install libjpeg-dev zlib1g-dev libfreetype6-dev liblcms1-dev libopenjp2-7 libtiff5 -y
+
 
 Once those dependencies are installed you can install Pillow using pip.
 
