@@ -20,12 +20,15 @@
 # THE SOFTWARE.
 
 # Modified by: Mike Paxton
-# Mod Date: 06/07/19
+# Mod Date: 06/12/19
 # Added both CPU temp and IP address to OLED display
 # Switched font to DejaVuSansMono-Bold.ttf for a slightly larger text
 # Note: Need to install Pillow rather than PIL.
 # Decreased the refresh time to try to take some of the overhead load off of cpu
+# Added display of second hard drive usage.
 
+# TODO: Create a means of automatically displaying usage for second hard drive based on existence of /dev/sda drive
+# and whether or not root is on external or SD card.
 
 import time
 
@@ -116,6 +119,9 @@ while True:
     draw.rectangle((0,0,width,height), outline=0, fill=0)
 
     # Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-$
+    # Added the ability to display two lines of disk usage.  For example Root (from SD) and /data (from external drive)
+    # To do this uncomment the cmd and disk2 lines as well as uncommenting the line in next section of code for disk2
+    # Change /data in "$NF==\"/data\"" to read the named path to your external drive.
     cmd = "hostname -s | cut -d\' \' -f1"
     HOST = subprocess.check_output(cmd, shell = True )
     cmd = "hostname -I | cut -d\' \' -f1"
@@ -124,19 +130,22 @@ while True:
     CPU = subprocess.check_output(cmd, shell = True )
     cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
     MemUsage = subprocess.check_output(cmd, shell = True )
-    cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
-    Disk = subprocess.check_output(cmd, shell = True )
+    cmd = "df -h | awk '$NF==\"/\"{printf \"Root Disk: %d/%dGB %s\", $3,$2,$5}'"
+    Disk = subprocess.check_output(cmd, shell=True)
+#    cmd = "df - h | awk '$NF==\"/data\"{printf \"Ext Disk: %d/%dGB (%s)\", $3,$2,$5}'"
+#    Disk2 = subprocess.check_output(cmd, shell = True )
     cmd = "vcgencmd measure_temp | cut -d '=' -f 2 | head --bytes -1"
     Temp = subprocess.check_output(cmd, shell = True )
 
-    # Write two lines of text.
-
-    draw.text((x, top),       "Host: " + str(HOST),  font=font, fill=255)
-    draw.text((x, top+9),     "IP: " + str(IP),  font=font, fill=255)
-    draw.text((x, top+19),    str(CPU), font=font, fill=255)
-    draw.text((x, top+28),    str(MemUsage),  font=font, fill=255)
-    draw.text((x, top+38),    str(Disk),  font=font, fill=255)
-    draw.text((x, top+48),    "Temp: " + str(Temp),  font=font, fill=255)
+    # Write seven lines of text.
+    # Uncomment last line if you want to display usage for second drive.
+    draw.text((x, top),         "Host: " + str(HOST),  font=font, fill=255)
+    draw.text((x, top + 9),     "IP: " + str(IP),  font=font, fill=255)
+    draw.text((x, top + 19),    str(CPU), font=font, fill=255)
+    draw.text((x, top + 28),    str(MemUsage),  font=font, fill=255)
+    draw.text((x, top + 38),    "Temp: " + str(Temp), font=font, fill=255)
+    draw.text((x, top + 48),    str(Disk),  font=font, fill=255)
+#    draw.text((x, top + 58),    str(Disk2), font=font, fill=255)
 
     # Display image.
     disp.image(image)
