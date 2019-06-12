@@ -28,7 +28,7 @@
 # Added display of second hard drive usage.
 
 # TODO: Create a means of automatically displaying usage for second hard drive based on existence of /dev/sda drive
-# and whether or not root is on external or SD card.
+#  and whether or not root is on external or SD card.
 
 import time
 
@@ -132,7 +132,7 @@ while True:
     MemUsage = subprocess.check_output(cmd, shell = True )
     cmd = "df -h | awk '$NF==\"/\"{printf \"Root Disk: %d/%dGB %s\", $3,$2,$5}'"
     Disk = subprocess.check_output(cmd, shell=True)
-#    cmd = "df - h | awk '$NF==\"/data\"{printf \"Ext Disk: %d/%dGB (%s)\", $3,$2,$5}'"
+#    cmd = "df -h | awk '$NF==\"/data\"{printf \"Disk2: %d/%dGB (%s)\", $3,$2,$5}'"
 #    Disk2 = subprocess.check_output(cmd, shell = True )
     cmd = "vcgencmd measure_temp | cut -d '=' -f 2 | head --bytes -1"
     Temp = subprocess.check_output(cmd, shell = True )
@@ -141,11 +141,11 @@ while True:
     # Uncomment last line if you want to display usage for second drive.
     draw.text((x, top),         "Host: " + str(HOST),  font=font, fill=255)
     draw.text((x, top + 9),     "IP: " + str(IP),  font=font, fill=255)
-    draw.text((x, top + 19),    str(CPU), font=font, fill=255)
-    draw.text((x, top + 28),    str(MemUsage),  font=font, fill=255)
-    draw.text((x, top + 38),    "Temp: " + str(Temp), font=font, fill=255)
-    draw.text((x, top + 48),    str(Disk),  font=font, fill=255)
-#    draw.text((x, top + 58),    str(Disk2), font=font, fill=255)
+    draw.text((x, top + 17),    str(CPU), font=font, fill=255)
+    draw.text((x, top + 27),    str(MemUsage),  font=font, fill=255)
+    draw.text((x, top + 37),    "Temp: " + str(Temp), font=font, fill=255)
+    draw.text((x, top + 47),    str(Disk),  font=font, fill=255)
+#    draw.text((x, top + 57),    str(Disk2), font=font, fill=255)
 
     # Display image.
     disp.image(image)
