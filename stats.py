@@ -27,9 +27,6 @@
 # Decreased the refresh time to try to take some of the overhead load off of cpu
 # Added display of second hard drive usage.
 
-# TODO: Create a means of automatically displaying usage for second hard drive based on existence of /dev/sda drive
-#  and whether or not root is on external or SD card.
-
 import time
 
 #import Adafruit_GPIO.SPI as SPI
@@ -122,6 +119,9 @@ while True:
     # Added the ability to display two lines of disk usage.  For example Root (from SD) and /data (from external drive)
     # To do this uncomment the cmd and disk2 lines as well as uncommenting the line in next section of code for disk2
     # Change /data in "$NF==\"/data\"" to read the named path to your external drive.
+    # TODO:  Create a means of automatically displaying usage of second hard drive if there is one.  If root is on
+    #  second HD then don't display SD card.
+
     cmd = "hostname -s | cut -d\' \' -f1"
     HOST = subprocess.check_output(cmd, shell = True )
     cmd = "hostname -I | cut -d\' \' -f1"
