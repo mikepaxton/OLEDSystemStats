@@ -37,6 +37,9 @@ from PIL import ImageDraw
 from PIL import ImageFont
 
 import subprocess
+import os
+
+
 
 # Raspberry Pi pin configuration:
 RST = None     # on the PiOLED this pin isnt used
@@ -110,6 +113,7 @@ x = 0
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
 font = ImageFont.truetype('DejaVuSansMono-Bold.ttf', 10)
 
+
 while True:
 
     # Draw a black filled box to clear the image.
@@ -132,8 +136,9 @@ while True:
     MemUsage = subprocess.check_output(cmd, shell = True )
     cmd = "df -h | awk '$NF==\"/\"{printf \"Root Disk: %d/%dGB %s\", $3,$2,$5}'"
     Disk = subprocess.check_output(cmd, shell=True)
-#    cmd = "df -h | awk '$NF==\"/data\"{printf \"Disk2: %d/%dGB (%s)\", $3,$2,$5}'"
-#    Disk2 = subprocess.check_output(cmd, shell = True )
+    if os.path.exists("/dev/sda1"):
+         cmd = "df -h | awk '$NF==\"/data\"{printf \"Disk2: %d/%dGB (%s)\", $3,$2,$5}'"
+         Disk2 = subprocess.check_output(cmd, shell = True )
     cmd = "vcgencmd measure_temp | cut -d '=' -f 2 | head --bytes -1"
     Temp = subprocess.check_output(cmd, shell = True )
 
@@ -145,7 +150,8 @@ while True:
     draw.text((x, top + 27),    str(MemUsage),  font=font, fill=255)
     draw.text((x, top + 37),    "Temp: " + str(Temp), font=font, fill=255)
     draw.text((x, top + 47),    str(Disk),  font=font, fill=255)
-#    draw.text((x, top + 57),    str(Disk2), font=font, fill=255)
+    if os.path.exists("/dev/sda1"):
+        draw.text((x, top + 57),    str(Disk2), font=font, fill=255)
 
     # Display image.
     disp.image(image)
