@@ -20,14 +20,13 @@
 # THE SOFTWARE.
 
 # Modified by: Mike Paxton
-# Mod Date: 06/20/19
+# Mod Date: 06/21/19
 # Added both CPU temp and IP address to OLED display
 # Switched font to DejaVuSansMono-Bold.ttf for a slightly larger text
 # Note: Need to install Pillow rather than PIL.
 # Decreased the refresh time to try to take some of the overhead load off of cpu
 # Added display of second hard drive usage.
 # Added support for MYSQL database
-# Added Adafruit IO for realtime remote monitoring
 
 import time
 import MySQLdb
@@ -44,8 +43,8 @@ from PIL import ImageFont
 import subprocess
 import os
 
+# Set to True if you want to send stats to MySQL database
 UpdateDB = True
-AdafruitIO = True
 
 
 # Raspberry Pi pin configuration:
@@ -178,14 +177,14 @@ while True:
     if UpdateDB:
         cmd = "top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'"
         CPU = subprocess.check_output(cmd, shell=True)
-        cmd = "free -m | awk 'NR==2{printf \"%s\", $3,$2,$3*100/$2 }'"
+        cmd = "free -m | awk 'NR==2{printf \"%d\", $3}'"
         MemUsage = subprocess.check_output(cmd, shell=True)
-        cmd = "df -h | awk '$NF==\"/\"{printf \"%d\", $3}'"
+        cmd = "df -h | awk '$NF==\"/\"{printf \"%.2f\", $3}'"
         Disk1 = subprocess.check_output(cmd, shell=True)
-        cmd = "df -h | awk '$NF==\"/data\"{printf \"%d\", $3}'"
+        cmd = "df -h | awk '$NF==\"/data\"{printf \"%.2f\", $3}'"
         Disk2 = subprocess.check_output(cmd, shell=True)
         cmd = "vcgencmd measure_temp | cut -d '=' -f 2 | head --bytes -3"
         Temp = subprocess.check_output(cmd, shell=True)
         dbUpdate()
 
-    time.sleep(2)
+    time.sleep(3)
