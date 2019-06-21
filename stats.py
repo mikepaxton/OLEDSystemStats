@@ -20,14 +20,19 @@
 # THE SOFTWARE.
 
 # Modified by: Mike Paxton
-# Mod Date: 06/12/19
+# Mod Date: 06/20/19
 # Added both CPU temp and IP address to OLED display
 # Switched font to DejaVuSansMono-Bold.ttf for a slightly larger text
 # Note: Need to install Pillow rather than PIL.
 # Decreased the refresh time to try to take some of the overhead load off of cpu
 # Added display of second hard drive usage.
+# Added support for MYSQL database
+# Added Adafruit IO for realtime remote monitoring
 
 import time
+import MySQLdb
+import datetime
+
 
 #import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
@@ -39,6 +44,8 @@ from PIL import ImageFont
 import subprocess
 import os
 
+UpdateDB = True
+AdafruitIO = True
 
 
 # Raspberry Pi pin configuration:
@@ -114,6 +121,15 @@ x = 0
 font = ImageFont.truetype('DejaVuSansMono-Bold.ttf', 10)
 
 
+def dbUpdate():
+    db = MySQLdb.connect(host="192.168.1.22", user="pi", passwd="CHANGEME", db="RPiStats")
+    c = db.cursor()
+    date = datetime.datetime.now()
+    c.execute("INSERT INTO stats (HostName, DateTime, CPUTemp, CPULoad, Disk1Usage, Disk2Usage, MemUsage) VALUES (%s,"
+              "%s,%s,%s,%s,%s,%s)", (HOST, date, Temp, CPU, Disk1, Disk2, MemUsage))
+    db.commit()
+    db.close()
+
 while True:
 
     # Draw a black filled box to clear the image.
@@ -133,7 +149,7 @@ while True:
     cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
     CPU = subprocess.check_output(cmd, shell = True )
     cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
-    MemUsage = subprocess.check_output(cmd, shell = True )
+    Mem = subprocess.check_output(cmd, shell = True )
     cmd = "df -h | awk '$NF==\"/\"{printf \"Root Disk: %d/%dGB %s\", $3,$2,$5}'"
     Disk = subprocess.check_output(cmd, shell=True)
     if os.path.exists("/dev/sda1"):
@@ -147,7 +163,7 @@ while True:
     draw.text((x, top),         "Host: " + str(HOST),  font=font, fill=255)
     draw.text((x, top + 9),     "IP: " + str(IP),  font=font, fill=255)
     draw.text((x, top + 17),    str(CPU), font=font, fill=255)
-    draw.text((x, top + 27),    str(MemUsage),  font=font, fill=255)
+    draw.text((x, top + 27),    str(Mem),  font=font, fill=255)
     draw.text((x, top + 37),    "Temp: " + str(Temp), font=font, fill=255)
     draw.text((x, top + 47),    str(Disk),  font=font, fill=255)
     if os.path.exists("/dev/sda1"):
@@ -156,4 +172,20 @@ while True:
     # Display image.
     disp.image(image)
     disp.display()
-    time.sleep(1)
+
+    # Update the database
+    # Must rerun the following commands in order to strip out extra data that would normally be displayed on display
+    if UpdateDB:
+        cmd = "top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'"
+        CPU = subprocess.check_output(cmd, shell=True)
+        cmd = "free -m | awk 'NR==2{printf \"%s\", $3,$2,$3*100/$2 }'"
+        MemUsage = subprocess.check_output(cmd, shell=True)
+        cmd = "df -h | awk '$NF==\"/\"{printf \"%d\", $3}'"
+        Disk1 = subprocess.check_output(cmd, shell=True)
+        cmd = "df -h | awk '$NF==\"/data\"{printf \"%d\", $3}'"
+        Disk2 = subprocess.check_output(cmd, shell=True)
+        cmd = "vcgencmd measure_temp | cut -d '=' -f 2 | head --bytes -3"
+        Temp = subprocess.check_output(cmd, shell=True)
+        dbUpdate()
+
+    time.sleep(2)
