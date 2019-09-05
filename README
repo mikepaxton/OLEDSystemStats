@@ -25,7 +25,7 @@ sudo apt install libjpeg-dev zlib1g-dev libfreetype6-dev liblcms1-dev libopenjp2
 
 Once those dependencies are installed you can install Pillow using pip.
 
-sudo pip install pi pillow
+sudo pip install pillow
 
 
 I'm using DejaVuSansMono-Bold.ttf font which produces a slightly better looking font on the OLED display over that of

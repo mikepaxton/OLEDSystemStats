@@ -20,14 +20,16 @@
 # THE SOFTWARE.
 
 # Modified by: Mike Paxton
-# Mod Date: 06/12/19
+# Mod Date: 06/28/19
 # Added both CPU temp and IP address to OLED display
 # Switched font to DejaVuSansMono-Bold.ttf for a slightly larger text
 # Note: Need to install Pillow rather than PIL.
 # Decreased the refresh time to try to take some of the overhead load off of cpu
 # Added display of second hard drive usage.
+# Removed support for MYSQL database.  Will add the support to my RPi_AdafruitIO_SysStats project
 
 import time
+
 
 #import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
@@ -37,6 +39,8 @@ from PIL import ImageDraw
 from PIL import ImageFont
 
 import subprocess
+import os
+
 
 # Raspberry Pi pin configuration:
 RST = None     # on the PiOLED this pin isnt used
@@ -110,6 +114,7 @@ font = ImageFont.load_default()
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
 #font = ImageFont.truetype('DejaVuSansMono-Bold.ttf', 10)
 
+
 while True:
 
     # Draw a black filled box to clear the image.
@@ -130,11 +135,12 @@ while True:
     cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
     CPU = subprocess.check_output(cmd, shell = True )
     cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
-    MemUsage = subprocess.check_output(cmd, shell = True )
+    Mem = subprocess.check_output(cmd, shell = True )
     cmd = "df -h | awk '$NF==\"/\"{printf \"Root Disk: %d/%dGB %s\", $3,$2,$5}'"
     Disk = subprocess.check_output(cmd, shell=True)
-#    cmd = "df -h | awk '$NF==\"/data\"{printf \"Disk2: %d/%dGB (%s)\", $3,$2,$5}'"
-#    Disk2 = subprocess.check_output(cmd, shell = True )
+    if os.path.exists("/dev/sda1"):
+         cmd = "df -h | awk '$NF==\"/data\"{printf \"Disk2: %d/%dGB (%s)\", $3,$2,$5}'"
+         Disk2 = subprocess.check_output(cmd, shell = True )
     cmd = "vcgencmd measure_temp | cut -d '=' -f 2 | head --bytes -1"
     Temp = subprocess.check_output(cmd, shell = True )
 
@@ -143,12 +149,13 @@ while True:
     draw.text((x, top),         "Host: " + str(HOST),  font=font, fill=255)
     draw.text((x, top + 9),     "IP: " + str(IP),  font=font, fill=255)
     draw.text((x, top + 17),    str(CPU), font=font, fill=255)
-    draw.text((x, top + 27),    str(MemUsage),  font=font, fill=255)
+    draw.text((x, top + 27),    str(Mem),  font=font, fill=255)
     draw.text((x, top + 37),    "Temp: " + str(Temp), font=font, fill=255)
     draw.text((x, top + 47),    str(Disk),  font=font, fill=255)
-#    draw.text((x, top + 57),    str(Disk2), font=font, fill=255)
+    if os.path.exists("/dev/sda1"):
+        draw.text((x, top + 57),    str(Disk2), font=font, fill=255)
 
     # Display image.
     disp.image(image)
     disp.display()
-    time.sleep(1)
+    time.sleep(3)
