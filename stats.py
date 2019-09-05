@@ -104,18 +104,19 @@ x = 0
 
 
 # Load default font.
-#font = ImageFont.load_default()
+font = ImageFont.load_default()
 
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
-font = ImageFont.truetype('DejaVuSansMono-Bold.ttf', 10)
+#font = ImageFont.truetype('DejaVuSansMono-Bold.ttf', 10)
 
 while True:
 
     # Draw a black filled box to clear the image.
     draw.rectangle((0,0,width,height), outline=0, fill=0)
 
-    # Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-$
+    # Shell scripts for system monitoring from here :
+    # https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-$
     # Added the ability to display two lines of disk usage.  For example Root (from SD) and /data (from external drive)
     # To do this uncomment the cmd and disk2 lines as well as uncommenting the line in next section of code for disk2
     # Change /data in "$NF==\"/data\"" to read the named path to your external drive.
